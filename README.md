@@ -1,4 +1,4 @@
-# Music-Generation-using-Transformers
+# 🎵Music-Generation-using-Transformers
 
 The **Music Transformer**, or Transformer Decoder with Relative Self-Attention, is a deep learning sequence model designed to generate music. It builds upon the Transformer architecture to consider the relative distances between different elements of the sequence, rather than/along with their absolute positions in the sequence. I explored my interest in AI-generated music through this project and learned quite a bit about current research in the field of AI in terms of both algorithms and architectures. This repository contains Python scripts to preprocess MIDI data, train a pre-LayerNorm Music Transformer using PyTorch, and generate MIDI files with a trained (or if you're brave, untrained) Music Transformer. It also contains three of my own trained Music Transformers that can be used to generate music.
 
