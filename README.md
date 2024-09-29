@@ -19,7 +19,7 @@ cd ./music-transformer
 pip install -r requirements.txt
 ```
 
-#Generate Music!
+# Generate Music!
 The Music Transformer is useless if we can't generate music with it. Given a pretrained Music Transformer’s state_dict and hparams saved at .../save_path.pt, and specifying the path to save a generated MIDI file, .../gen_audio.mid, run the following:
 ```bash
 python generate.py .../save_path.pt .../gen_audio.mid
@@ -43,7 +43,7 @@ I have found that a sampling temperature of 0.7-1.0 and top_k of 50-200 work wel
 The notebook Generate_Music.ipynb allows you to generate music with the models in this repository (by default the Chopin model) using Google’s Magenta SoundFont, as well as download any generated audio files, without having to write any underlying code. So for those who wish to play around with these models, go ahead and open that notebook in Google Colab.
 
 
-#Preprocess MIDI Data
+# Preprocess MIDI Data
 Most sequence models require a general upper limit on the length of the sequences being modeled, as it becomes computationally or memory expensive to handle longer sequences. Suppose you have a directory of MIDI files at .../datapath/ (for instance, any of the folders in the MAESTRO Dataset), and would like to convert these files into an event vocabulary that can be trained on, cut these sequences to be less than or equal to an approximate maximum length, lth, and store this processed data in a single PyTorch tensor for use with torch.utils.data.TensorDataset at .../processed_data.pt. Running the preprocessing.py script as follows:
 ```bash
 python preprocessing.py .../datapath/ .../processed_data.pt lth
@@ -54,7 +54,7 @@ This will translate the MIDI files to the event vocabulary laid out in vocabular
 Note: This script will not work properly for multi-track MIDI files, and any other instruments will automatically be converted to piano, as I worked only with single-track piano MIDI for this project.
 
 
-#Train a Music Transformer
+# Train a Music Transformer
 The Music Transformer is highly space-complex and requires significant time to train on both GPUs and TPUs, so checkpointing while training is essential. The MusicTransformerTrainer class in train.py implements checkpointing. At its simplest, given a path to a preprocessed dataset in the form of a PyTorch tensor, .../preprocessed_data.pt, a path to checkpoint the model, .../ckpt_path.pt, a path to save the model, .../save_path.pt, and the number of epochs to train the model, running the following:
 
 ```bash
@@ -73,7 +73,7 @@ python train.py .../preprocessed_data.pt .../ckpt_path.pt .../save_path.pt epoch
 
 The latest checkpoint stored at .../ckpt_path.pt will be loaded, and training will continue. Once training is complete, another checkpoint will be created, and the model’s state_dict and hparams will be saved in a Python dictionary at .../save_path.pt.
 
-#Acknowledgements
+# Acknowledgements
 I trained most of my models on Western classical music from the MAESTRO Dataset.
 The model trained on video game music was trained using a subset of the ADL Piano MIDI Dataset.
 
