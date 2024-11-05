@@ -78,6 +78,9 @@ I trained most of my models on Western classical music from the MAESTRO Dataset.
 The model trained on video game music was trained using a subset of the ADL Piano MIDI Dataset.
 
 
+# you can use the above colab link
+and geberate piano music
+
 
 
 
