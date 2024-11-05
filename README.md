@@ -54,7 +54,7 @@ This will translate the MIDI files to the event vocabulary laid out in vocabular
 Note: This script will not work properly for multi-track MIDI files, and any other instruments will automatically be converted to piano, as I worked only with single-track piano MIDI for this project.
 
 
-# Train a Music Transformer
+# Train a Music Transformer🎵
 The Music Transformer is highly space-complex and requires significant time to train on both GPUs and TPUs, so checkpointing while training is essential. The MusicTransformerTrainer class in train.py implements checkpointing. At its simplest, given a path to a preprocessed dataset in the form of a PyTorch tensor, .../preprocessed_data.pt, a path to checkpoint the model, .../ckpt_path.pt, a path to save the model, .../save_path.pt, and the number of epochs to train the model, running the following:
 
 ```bash
