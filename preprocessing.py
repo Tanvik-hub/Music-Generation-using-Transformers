@@ -1,15 +1,4 @@
-"""
-Copyright 2021 Aditya Gomatam.
 
-This file is part of music-transformer (https://github.com/spectraldoy/music-transformer), my project to build and
-train a Music Transformer. music-transformer is open-source software licensed under the terms of the GNU General
-Public License v3.0. music-transformer is free software: you can redistribute it and/or modify it under the terms of
-the GNU General Public License as published by the Free Software Foundation, either version 3 of the License,
-or (at your option) any later version. music-transformer is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU General Public License for more details. A copy of this license can be found within the GitHub repository
-for music-transformer, or at https://www.gnu.org/licenses/gpl-3.0.html.
-"""
 
 import os
 import argparse
@@ -21,24 +10,10 @@ from vocabulary import *
 from tokenizer import *
 import glob
 
-"""
-Functionality to preprocess MIDI files translated into indices in the event vocabulary from command line
-"""
 
 
 def sample_end_data(seqs, lth, factor=6):
-    """
-    Randomly samples sequences of length ~lth from an input set of sequences seqs. Prepares data for augmentation.
-    Returns a list. Deliberately samples from the end so that model learns to end.
-
-    Args:
-        seqs (list): list of sequences in the event vocabulary
-        lth (int): approximate length to cut sequences into
-        factor (int): factor to vary range of output lengths; Default: 6. Higher factor will narrow the output range
-
-    Returns:
-        input sequs cut to length ~lth
-    """
+  
     data = []
     for seq in seqs:
         lower_bound = max(len(seq) - lth, 0)
@@ -49,18 +24,7 @@ def sample_end_data(seqs, lth, factor=6):
 
 
 def sample_data(seqs, lth, factor=6):
-    """
-    Randomly samples sequences of length ~lth from an input set of sequences seqs. Prepares data for augmentation.
-    Returns a list.
-
-    Args:
-        seqs (list): list of sequences in the event vocabulary
-        lth (int): approximate length to cut sequences into
-        factor (int): factor to vary range of output lengths; Default: 6. Higher factor will narrow the output range
-
-    Returns:
-        input sequs cut to length ~lth
-    """
+   
     data = []
     for seq in seqs:
         length = randint(lth - lth // factor, lth + lth // factor)
@@ -71,19 +35,7 @@ def sample_data(seqs, lth, factor=6):
 
 
 def aug(data, note_shifts=None, time_stretches=None, verbose=False):
-    """
-    Augments data up and down in pitch by note_shifts and faster and slower in time by time_stretches. Adds start
-    and end tokens and pads to max sequence length in data
-
-    Args:
-        data (list of lists of ints): sequences to augment
-        note_shifts (list): pitch transpositions to be made
-        time_stretches (list): stretches in time to be made
-        verbose (bool): set to True to periodically print augmentation progress
-
-    Returns:
-        input data with pitch transpositions and time stretches, concatendated to one tensor
-    """
+  
     if note_shifts is None:
         note_shifts = torch.arange(-2, 3)
     if time_stretches is None:
@@ -167,14 +119,7 @@ def aug(data, note_shifts=None, time_stretches=None, verbose=False):
 
 
 def randomly_sample_aug_data(aug_data, k, augs=25):
-    """
-    Randomly samples k sets of augmented data to cut down dataset
-
-    Args:
-        aug_data (torch.Tensor): augmented dataset
-        k (int): coefficient such that k * augs samples are returned
-        augs (int): total number of augmentations per sequence performed on original dataset
-    """
+   
     random_indices = sample(range(len(aug_data) // augs), k=k)
     out = torch.cat(
         [t[i * augs:i * augs + augs] for i in random_indices],
