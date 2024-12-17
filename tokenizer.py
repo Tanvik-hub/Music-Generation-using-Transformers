@@ -1,40 +1,14 @@
-"""
-Copyright 2021 Aditya Gomatam.
 
-This file is part of music-transformer (https://github.com/spectraldoy/music-transformer), my project to build and
-train a Music Transformer. music-transformer is open-source software licensed under the terms of the GNU General
-Public License v3.0. music-transformer is free software: you can redistribute it and/or modify it under the terms of
-the GNU General Public License as published by the Free Software Foundation, either version 3 of the License,
-or (at your option) any later version. music-transformer is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU General Public License for more details. A copy of this license can be found within the GitHub repository
-for music-transformer, or at https://www.gnu.org/licenses/gpl-3.0.html.
-"""
 
 import mido
 from vocabulary import *
 from torch import LongTensor
 
-"""
-Implementation of translators of MIDI files to and from the event-based
-vocabulary representation of MIDI files according to Oore et al., 2018
 
-NOTE: this functionality only works for single-track MIDI files
-"""
 
 
 def midi_parser(fname=None, mid=None):
-    """
-    Translates a single-track midi file (specifically piano) into Oore et. al, 2018 vocabulary
-
-    Args:
-        fname (str): path to midi file to load OR
-        mid (mido.MidiFile): loaded midi file
-
-    Returns:
-        index_list (torch.Tensor): list of indices in vocab
-        event_list (list): list of events in vocab
-    """
+   
     # take only one of fname or mid
     if not ((fname is None) ^ (mid is None)):
         raise ValueError("Input one of fname or mid, not both or neither")
@@ -136,20 +110,7 @@ def midi_parser(fname=None, mid=None):
 
 
 def list_parser(index_list=None, event_list=None, fname="bloop", tempo=512820):
-    """
-    Translates a set of events or indices in the Oore et. al, 2018 vocabulary into a midi file
 
-    Args:
-        index_list (list or torch.Tensor): list of indices in vocab OR
-        event_list (list): list of events in vocab
-        fname (str, optional): name for single track of midi file returned
-        tempo (int, optional): tempo of midi file returned in µs / beat,
-                               tempo_in_µs_per_beat = 60 * 10e6 / tempo_in_bpm
-
-    Returns:
-        mid (mido.MidiFile): single-track piano midi file translated from vocab
-                             NOTE: mid IS NOT SAVED BY THIS FUNCTION, IT IS ONLY RETURNED
-    """
     # take only one of event_list or index_list to translate
     if not ((index_list is None) ^ (event_list is None)):
         raise ValueError("Input one of index_list or event_list, not both or neither")
