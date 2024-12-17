@@ -1,15 +1,3 @@
-"""
-Copyright 2021 Aditya Gomatam.
-
-This file is part of music-transformer (https://github.com/spectraldoy/music-transformer), my project to build and
-train a Music Transformer. music-transformer is open-source software licensed under the terms of the GNU General
-Public License v3.0. music-transformer is free software: you can redistribute it and/or modify it under the terms of
-the GNU General Public License as published by the Free Software Foundation, either version 3 of the License,
-or (at your option) any later version. music-transformer is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU General Public License for more details. A copy of this license can be found within the GitHub repository
-for music-transformer, or at https://www.gnu.org/licenses/gpl-3.0.html.
-"""
 
 import argparse
 import time
@@ -22,31 +10,10 @@ from hparams import device
 from masking import create_mask
 from model import MusicTransformer
 
-"""
-Functionality to train a Music Transformer on a single CPU or single GPU
-
-The transformer is an autoregressive model, which means that at the inference stage, it will make next predictions 
-based on its previous outputs. However, while training, we can use teacher forcing - feeding the target into the 
-model as previous output regardless of the true output of the model. This significantly cuts down on the compute 
-required, while usually reducing loss (at the expense of generalizability of the model). Since we are training a 
-generative model, the targets are simply the inputs shifted right by 1 position.
-"""
 
 
 def transformer_lr_schedule(d_model, step_num, warmup_steps=4000):
-    """
-    As per Vaswani et. al, 2017, the post-LayerNorm transformer performs vastly better a custom learning rate
-    schedule. Though the PyTorch implementation of the Music-Transformer uses pre-LayerNorm, which has been observed
-    not to require a custom schedule, this function is here for utility.
-
-    Args:
-        d_model: embedding / hidden dimenision of the transformer
-        step_num: current training step
-        warmup_steps: number of transformer schedule warmup steps. Set to 0 for a continuously decaying learning rate
-
-    Returns:
-        learning rate at current step_num
-    """
+   
     if warmup_steps <= 0:
         step_num += 4000
         warmup_steps = 4000
@@ -61,18 +28,7 @@ def transformer_lr_schedule(d_model, step_num, warmup_steps=4000):
 
 
 def loss_fn(prediction, target, criterion=F.cross_entropy):
-    """
-    Since some positions of the input sequences are padded, we must calculate the loss by appropriately masking
-    padding values
-
-    Args:
-        prediction: output of the model for some input
-        target: true value the model was supposed to predict
-        criterion: vanilla loss criterion
-
-    Returns:
-        masked loss between prediction and target
-    """
+   
     mask = torch.ne(target, torch.zeros_like(target))           # ones where target is 0
     _loss = criterion(prediction, target, reduction='none')     # loss before masking
 
@@ -85,19 +41,7 @@ def loss_fn(prediction, target, criterion=F.cross_entropy):
 
 
 def train_step(model: MusicTransformer, opt, sched, inp, tar):
-    """
-    Computes loss and backward pass for a single training step of the model
-
-    Args:
-        model: MusicTransformer model to train
-        opt: optimizer initialized with model's parameters
-        sched: scheduler properly initialized with opt
-        inp: input batch
-        tar: input batch shifted right by 1 position; MusicTransformer is a generative model
-
-    Returns:
-        loss before current backward pass
-    """
+    
     # forward pass
     predictions = model(inp, mask=create_mask(inp, n=inp.dim() + 2))
 
@@ -112,53 +56,18 @@ def train_step(model: MusicTransformer, opt, sched, inp, tar):
 
 
 def val_step(model: MusicTransformer, inp, tar):
-    """
-    Computes loss for a single evaluation / validation step of the model
-
-    Args:
-        model: MusicTransformer model to evaluate
-        inp: input batch
-        tar: input batch shifted right by 1 position
-
-    Returns:
-        loss of model on input batch
-    """
+    
     predictions = model(inp, mask=create_mask(inp, n=max(inp.dim() + 2, 2)))
     loss = loss_fn(predictions.transpose(-1, -2), tar)
     return float(loss)
 
 
 class MusicTransformerTrainer:
-    """
-    As the transformer is a large model and takes a while to train on a GPU, or even a TPU, I wrote this Trainer
-    class to make it easier to load and save checkpoints with the model. The way I've designed it instantiates the
-    model, optimizer, and scheduler within the class itself, as there are some problems with passing them in. But,
-    to get these objects back just call:
-        trainer.model
-        trainer.optimizer
-        trainer.scheduler
-
-    This class also tracks the cumulative losses while training, which you can get back with:
-        trainer.train_losses
-        trainer.val_losses
-    as lists of floats
-
-    To save a checkpoint, call trainer.save()
-    To load a checkpoint, call trainer.load( (optional) ckpt_path)
-    """
+   
 
     def __init__(self, hparams_, datapath, batch_size, warmup_steps=4000,
                  ckpt_path="music_transformer_ckpt.pt", load_from_checkpoint=False):
-        """
-        Args:
-            hparams_: hyperparameters of the model
-            datapath: path to the data to train on
-            batch_size: batch size to batch the data
-            warmup_steps: number of warmup steps for transformer learning rate schedule
-            ckpt_path: path at which to save checkpoints while training; MUST end in .pt or .pth
-            load_from_checkpoint (bool, optional): if true, on instantiating the trainer, this will load a previously
-                                                   saved checkpoint at ckpt_path
-        """
+      
         # get the data
         self.datapath = datapath
         self.batch_size = batch_size
@@ -204,14 +113,7 @@ class MusicTransformerTrainer:
             self.load()
 
     def save(self, ckpt_path=None):
-        """
-        Saves a checkpoint at ckpt_path
-
-        Args:
-            ckpt_path (str, optional): if None, saves the checkpoint at the previously stored self.ckpt_path
-                                       else saves the checkpoints at the new passed-in path, and stores this new path at
-                                       the member variable self.ckpt_path
-        """
+       
         if ckpt_path is not None:
             self.ckpt_path = ckpt_path
 
@@ -229,15 +131,7 @@ class MusicTransformerTrainer:
         return
 
     def load(self, ckpt_path=None):
-        """
-        Loads a checkpoint from ckpt_path
-        NOTE: OVERWRITES THE MODEL STATE DICT, OPTIMIZER STATE DICT, SCHEDULER STATE DICT, AND HISTORY OF LOSSES
-
-        Args:
-            ckpt_path (str, optional): if None, loads the checkpoint at the previously stored self.ckpt_path
-                                       else loads the checkpoints from the new passed-in path, and stores this new path
-                                       at the member variable self.ckpt_path
-        """
+        
         if ckpt_path is not None:
             self.ckpt_path = ckpt_path
 
@@ -268,17 +162,7 @@ class MusicTransformerTrainer:
         return
 
     def fit(self, epochs):
-        """
-        Training loop to fit the model to the data stored at the passed in datapath. If KeyboardInterrupt at anytime
-        during the training loop, and if progresss being printed, this method will save a checkpoint at the 
-        passed-in ckpt_path
-
-        Args:
-            epochs: number of epochs to train for.
-
-        Returns:
-            history of training and validation losses for this training session
-        """
+       
         train_losses = []
         val_losses = []
         start = time.time()
