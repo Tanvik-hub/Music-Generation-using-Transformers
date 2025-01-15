@@ -1,37 +1,3 @@
-"""
-Copyright 2021 Aditya Gomatam.
-
-This file is part of music-transformer (https://github.com/spectraldoy/music-transformer), my project to build and
-train a Music Transformer. music-transformer is open-source software licensed under the terms of the GNU General
-Public License v3.0. music-transformer is free software: you can redistribute it and/or modify it under the terms of
-the GNU General Public License as published by the Free Software Foundation, either version 3 of the License,
-or (at your option) any later version. music-transformer is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU General Public License for more details. A copy of this license can be found within the GitHub repository
-for music-transformer, or at https://www.gnu.org/licenses/gpl-3.0.html.
-"""
-
-"""
-Vocabulary described in Oore et. al, 2018 and helper functions
-
-Possible MIDI events being considered:
-    128 note_on events
-    128 note_off events
-    125 time_shift events #time_shift = 1: 8 ms
-    32  velocity events
-
-Total midi events = 413
-
-Indices in the vocabulary:
-v[       0] = '<pad>'
-v[  1..128] = note_on
-v[129..256] = note_off
-v[257..381] = time_shift
-v[382..413] = velocity
-v[414..415] = '<start>', '<end>'
-"""
-
-"""MANIFEST CONSTANTS"""
 
 note_on_events = 128
 note_off_events = note_on_events
