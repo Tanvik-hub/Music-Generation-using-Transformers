@@ -8,28 +8,10 @@ from masking import *
 from tokenizer import *
 from vocabulary import *
 
-"""
-Functionality to use Music-Transformer model after (or during) training to generate audio
-"""
 
 
 def load_model(filepath, compile = False):
-    """
-    Load a MusicTransformer from a saved pytorch state_dict and hparams. The input filepath should point to a .pt
-    file in which has been saved a dictionary containing the model state dict and hparams, ex:
-    torch.save(filepath, {
-        "state_dict": MusicTransformer.state_dict(),
-        "hparams": hparams (dict)
-    })
-
-    Args:
-        filepath (str): path to single .pt file containing the dictionary as described above
-        compile (bool): whether or not to compile the model after loading, as compiled models
-            sometimes raise warnings during execution
-
-    Returns:
-        the loaded MusicTransformer model
-    """
+   
     from model import MusicTransformer
     from hparams import hparams, device
     
